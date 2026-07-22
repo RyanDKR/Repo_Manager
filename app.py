@@ -48,7 +48,7 @@ def envoyer_notification(responsables_str, rubrique, type_action="Nouvelle"):
         "Dir. Sinistres": "frederic.takou@afgassurances.cm",   
         "Ressources Humaines": "emilienne.kikolo@afgassurances.cm",
         "Finance": "katian.kone@afgassurances.cm",
-        "Comité Médical": "theophile.misse@afgassurances.cm"
+        "Comité Médical": "dikongueebodes@gmail.com"
     }
     
     liste_resp = [r.strip() for r in responsables_str.split(",")]
