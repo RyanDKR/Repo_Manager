@@ -40,15 +40,15 @@ def envoyer_notification(responsables_str, rubrique, type_action="Nouvelle"):
     """
     Prépare et envoie un email aux responsables concernés via SMTP.
     """
-    # 1. Annuaire (Mets tes vraies adresses de test ici)
+    # 1. Annuaire mis à jour avec le domaine de l'entreprise
     annuaire = {
-        "Direction Générale": "dg@entreprise.com",
-        "DSI": "dsi@entreprise.com",
-        "Dir. Sinistres": "sinistres@entreprise.com",
-        "Ressources Humaines": "rh@entreprise.com",
-        "Contrôle Permanent": "controle@entreprise.com",
-        "Finance": "finance@entreprise.com",
-        "Comité Médical": "medical@entreprise.com"
+        "Contrôle Permanent": "cyrille.fokam@afgassurances.cm",
+        "Direction Générale": "theophile.tchio@afgassurances.cm", 
+        "DSI": "clotaire.koungue@afgassurances.cm",               
+        "Dir. Sinistres": "frederic.takou@afgassurances.cm",   
+        "Ressources Humaines": "emilienne.kikolo@afgassurances.cm",
+        "Finance": "katian.kone@afgassurances.cm",
+        "Comité Médical": "theophile.misse@afgassurances.cm"
     }
     
     liste_resp = [r.strip() for r in responsables_str.split(",")]
@@ -57,14 +57,14 @@ def envoyer_notification(responsables_str, rubrique, type_action="Nouvelle"):
     if not destinataires:
         return False, "Aucune adresse email configurée pour ces responsables."
 
-    # 2. Récupération des identifiants depuis le fichier .env
-    smtp_server = os.getenv("SMTP_SERVER")
-    smtp_port = int(os.getenv("SMTP_PORT", 587))
-    smtp_email = os.getenv("SMTP_EMAIL")
-    smtp_password = os.getenv("SMTP_PASSWORD")
-    
-    if not smtp_email or not smtp_password:
-         return False, "Erreur : Les identifiants SMTP sont introuvables dans le fichier .env."
+    # 2. Récupération ultra-sécurisée des identifiants via Streamlit Secrets
+    try:
+        smtp_server = st.secrets["SMTP_SERVER"]
+        smtp_port = st.secrets["SMTP_PORT"]
+        smtp_email = st.secrets["SMTP_EMAIL"]
+        smtp_password = st.secrets["SMTP_PASSWORD"]
+    except Exception as e:
+        return False, "Les identifiants SMTP ne sont pas configurés dans les Secrets de Streamlit."
 
     # 3. Préparation du message
     sujet = f"[{type_action.upper()}] Action requise : Suivi des recommandations"
@@ -78,7 +78,7 @@ Statut : {type_action}
 Merci de vous connecter à l'application de suivi pour consulter les détails.
 
 Cordialement,
-L'équipe de Contrôle
+Le Contrôle Permanent
     """
     
     msg = MIMEMultipart()
@@ -90,7 +90,7 @@ L'équipe de Contrôle
     # 4. Connexion et Envoi réel
     try:
         server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls() # Sécurise la connexion (obligatoire pour Office 365 / Gmail)
+        server.starttls() # Sécurise la connexion
         server.login(smtp_email, smtp_password)
         server.send_message(msg)
         server.quit()
@@ -98,66 +98,6 @@ L'équipe de Contrôle
         return True, f"Email envoyé avec succès à {', '.join(destinataires)}"
     except Exception as e:
         return False, f"Erreur de connexion SMTP : {str(e)}"
-    """
-    Prépare et envoie un email aux responsables concernés.
-    """
-    # 1. Annuaire de l'entreprise (À adapter avec les vraies adresses)
-    annuaire = {
-        "Direction Générale": "dg@entreprise.com",
-        "DSI": "dsi@entreprise.com",
-        "Dir. Sinistres": "sinistres@entreprise.com",
-        "Ressources Humaines": "rh@entreprise.com",
-        "Contrôle Permanent": "controle@entreprise.com",
-        "Finance": "finance@entreprise.com",
-        "Comité Médical": "medical@entreprise.com"
-    }
-    
-    # Récupération des emails correspondants aux responsables choisis
-    liste_resp = [r.strip() for r in responsables_str.split(",")]
-    destinataires = [annuaire[r] for r in liste_resp if r in annuaire]
-    
-    if not destinataires:
-        return False, "Aucune adresse email configurée pour ces responsables."
-
-    # 2. Préparation du message
-    sujet = f"[{type_action.upper()}] Action requise : Suivi des recommandations"
-    corps = f"""Bonjour,
-
-Une recommandation vous concernant a été mise à jour ou ajoutée par le Contrôle Permanent.
-
-Thème : {rubrique}
-Statut : {type_action}
-
-Merci de vous connecter à l'application de suivi pour consulter les détails et mettre à jour votre état d'avancement.
-
-Cordialement,
-Le Contrôle Permanent
-    """
-    
-    msg = MIMEMultipart()
-    msg['From'] = "ne-pas-repondre@entreprise.com"
-    msg['To'] = ", ".join(destinataires)
-    msg['Subject'] = sujet
-    msg.attach(MIMEText(corps, 'plain'))
-
-    # 3. Envoi via SMTP (Actuellement simulé pour les tests locaux)
-    try:
-        # ---- CODE À DÉCOMMENTER AVEC LE SERVICE INFORMATIQUE ----
-        # SMTP_SERVER = "smtp.office365.com" # Exemple pour Outlook
-        # SMTP_PORT = 587
-        # SMTP_USER = "email_automate@entreprise.com"
-        # SMTP_PASSWORD = "mot_de_passe_secret" # À stocker dans un fichier .env plus tard !
-        
-        # server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        # server.starttls() # Sécurise la connexion
-        # server.login(SMTP_USER, SMTP_PASSWORD)
-        # server.send_message(msg)
-        # server.quit()
-        # ---------------------------------------------------------
-        
-        return True, f"Simulation : Email envoyé à {', '.join(destinataires)}"
-    except Exception as e:
-        return False, f"Erreur lors de l'envoi de l'email : {str(e)}"
 
 def main():
     db.init_db()
