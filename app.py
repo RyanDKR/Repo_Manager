@@ -9,6 +9,9 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 from dotenv import load_dotenv
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # Charge les variables cachées du fichier .env
 load_dotenv()
@@ -42,13 +45,13 @@ def envoyer_notification(responsables_str, rubrique, type_action="Nouvelle"):
     """
     # 1. Annuaire mis à jour avec le domaine de l'entreprise
     annuaire = {
-        "Contrôle Permanent": "cyrille.fokam@afgassurances.cm",
-        "Direction Générale": "theophile.tchio@afgassurances.cm", 
-        "DSI": "clotaire.koungue@afgassurances.cm",               
-        "Dir. Sinistres": "frederic.takou@afgassurances.cm",   
-        "Ressources Humaines": "emilienne.kikolo@afgassurances.cm",
-        "Finance": "katian.kone@afgassurances.cm",
-        "Comité Médical": "dikongueebodes@gmail.com"
+        "DCPC": "cyrille.fokam@afgassurances.cm",
+        "DG": "theophile.tchio@afgassurances.cm", 
+        "IT": "clotaire.koungue@afgassurances.cm",               
+        "DSIN": "frederic.takou@afgassurances.cm",   
+        "RH": "emilienne.kikolo@afgassurances.cm",
+        "DAF": "katian.kone@afgassurances.cm",
+        "DC": "dikongueebodes@gmail.com"
     }
     
     liste_resp = [r.strip() for r in responsables_str.split(",")]
